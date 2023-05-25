@@ -200,6 +200,13 @@ class Mapl(CMakePackage):
               subprocess.check_output(nc_pc_cmd, encoding="utf8").strip()
             filter_file("(target_link_libraries[^)]+PUBLIC )", \
               r'\1 %s '%nc_flags, "pfio/CMakeLists.txt")
+        if self.spec.satisfies("@2.38:2.39.1"):
+            for subdir in ["geom", "pfio"]:
+                filter_file(
+                  "(find_package \(PFLOGGER REQUIRED\))",
+                  "if (BUILD_WITH_PFLOGGER)\n  \\1\nendif()",
+                  subdir+"/CMakeLists.txt"
+                )
 
     def setup_build_environment(self, env):
         # esma_cmake, an internal dependency of mapl, is
